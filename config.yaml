@@ -1,0 +1,35 @@
+database:
+  decoy_string: "DECOY_"
+  decoy_string_position: "prefix"
+  missing_decoy_action: "warn"
+
+search_engines:
+    - "msgfplus"
+    - "xtandem"
+#    - "comet"
+#    - "myrimatch"
+
+lc:
+    peak_width: '120'
+
+precursor:
+    mass_tolerance: '20'
+    error_units: 'ppm'
+
+fragment:
+    mass_tolerance: '20'
+    error_units: 'ppm'
+
+digestion:
+    enzyme: "Trypsin/P"
+    missed_cleavages: "3"
+
+modifications:
+    fixed: "\"Carbamidomethyl (C)\""
+    variable: ""
+
+protein_inference:
+    fido_fdr_filter: "0.15"
+
+singularity:
+    default: "shub://mafreitas/singularity-openms:latest"
