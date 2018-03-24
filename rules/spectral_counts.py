@@ -3,21 +3,25 @@ rule filter_peptides_sc:
     input:
         idxml = "work/{dbsearchdir}/{datafile}/fdr_{datafile}.idXML"
     output:
-        idxml = "work/{dbsearchdir}/{datafile}/sc_filt_{datafile}.idXML"
+        idxml = temp("work/{dbsearchdir}/{datafile}/sc_filt_{datafile}.idXML")
     singularity:
         config['singularity']['default']
     threads:
         1
     params:
-        debug = '-debug %s' % debug,
-        log = 'work/%s/{datafile}/sc_filt_{datafile}.log' % search
+        pepfdr = '-score:pep {0}'.format(config["peptide"]["fdr"]),
+        debug = '-debug {0}'.format(config["database"]),
+        log = 'work/%s/{datafile}/pi_filt_ur_{datafile}.log' % search
     shell:
         "IDFilter "
         "-in {input.idxml} "
         "-out {output.idxml} "
-        "-delete_unreferenced_peptide_hits "
-        "-score:pep {peptide_fdr_filter} "
+        "{params.pepfdr} "
         "-score:prot 0 "
+        "-delete_unreferenced_peptide_hits "
+        "-threads {threads} "
+        "{params.debug} "
+        "2>&1 | tee {params.log} "
 
 
 # ProteinQuantifierSeparate
@@ -26,13 +30,13 @@ rule count_spectra_perfile:
         idxml = "work/{dbsearchdir}/{datafile}/sc_filt_{datafile}.idXML",
         fido = "work/{dbsearchdir}/proteinid/fido_fdr_filt.idXML"
     output:
-        csv = "csv/{datafile}_{dbsearchdir}_proteinCounts.csv"
+        csv = temp("csv/{datafile}_{dbsearchdir}_proteinCounts.csv")
     singularity:
         config['singularity']['default']
     threads:
         1
     params:
-        debug = '-debug %s' % debug,
+        debug = '-debug {0}'.format(config["database"]),
         log = "csv/{datafile}_{dbsearchdir}_proteinCounts.log"
     singularity:
         config['singularity']['default']
@@ -54,7 +58,7 @@ rule combine_spectral_counts:
         csvs = expand(
             "csv/{sample}_{{dbsearchdir}}_proteinCounts.csv", sample=SAMPLES)
     output:
-        csv = "csv/{dbsearchdir}_combined_proteinCounts.csv"
+        csv = "csv/sc_{dbsearchdir}_proteinCounts.csv"
     params:
         names = expand("{sample}", sample=SAMPLES),
         log = 'false'

@@ -3,6 +3,12 @@ database:
   decoy_string_position: "prefix"
   missing_decoy_action: "warn"
 
+fasta:
+    location: "ftp.peptideatlas.org/distro/fasta"
+
+mzml:
+    location: "ftp.peptideatlas.org/distro/mzML"
+
 search_engines:
     - "msgfplus"
     - "xtandem"
@@ -13,12 +19,12 @@ lc:
     peak_width: '120'
 
 precursor:
-    mass_tolerance: '20'
-    error_units: 'ppm'
+    tolerance: '20'
+    units: 'ppm'
 
 fragment:
-    mass_tolerance: '20'
-    error_units: 'ppm'
+    tolerance: '20'
+    units: 'ppm'
 
 digestion:
     enzyme: "Trypsin/P"
@@ -28,8 +34,13 @@ modifications:
     fixed: "\"Carbamidomethyl (C)\""
     variable: ""
 
-protein_inference:
-    fido_fdr_filter: "0.15"
+protein:
+    fdr: "0.95"
+
+peptide:
+    fdr: "0.01"
 
 singularity:
     default: "shub://mafreitas/singularity-openms:latest"
+
+debug: "0"

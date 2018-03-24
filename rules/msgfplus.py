@@ -9,7 +9,8 @@ rule msgfplus_db_index:
     threads:
         1
     params:
-        debug = '-debug %s' % debug,
+        debug = '-debug {0}'.format(config["database"]),
+
         log = 'work/database/MSGFPlusIndexDB.log'
     shell:
         "java -Xmx3500M -cp /usr/local/openms_thirdparty/All/MSGFPlus/MSGFPlus.jar "
@@ -35,23 +36,27 @@ rule msgfplus:
     priority:
         10
     params:
-        debug = '-debug %s' % debug,
+        pmt = "-precursor_mass_tolerance {0}".format(config["precursor"]["tolerance"]),
+        pmu = "-precursor_error_units {0}".format(config["precursor"]["units"]),
+        e = "-enzyme {0}".format(config["digestion"]["enzyme"]),
+        fm = "-fixed_modifications {0}".format(config["modifications"]["fixed"]),
+        debug = '-debug {0}'.format(config["database"]),
         log = 'work/%s/{datafile}/dbsearch_{datafile}.log' % search
     shell:
         "MSGFPlusAdapter "
         "-in {input.mzml} -out {output.idxml} -database {input.fasta} "
         "-executable "
         "/usr/local/openms_thirdparty/All/MSGFPlus/MSGFPlus.jar "
-        "-precursor_mass_tolerance {precursor_mass_tolerance} "
-        "-precursor_error_units {precursor_error_units} "
-        "-enzyme {enzyme} "
-        "-fixed_modifications {fixed_modifications} "
         "-java_memory 8192 "
         "-isotope_error_range 0,0 "
         "-instrument Q_Exactive "
         "-max_precursor_charge 4 "
         "-add_features "
         "-max_mods 3 "
+        "{params.pmt} "
+        "{params.pmu} "
+        "{params.e} "
+        "{params.fm} "
         "-threads {threads} "
         "{params.debug} "
         "2>&1 | tee {params.log} "

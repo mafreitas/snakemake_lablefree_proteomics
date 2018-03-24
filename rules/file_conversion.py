@@ -1,9 +1,9 @@
 # File Conversion:
 rule fix_mzml_files:
     input:
-        mzml = "raw/{datafile}.mzML",
+        mzml = expand("{location}/{{datafile}}.mzML",location=config["mzml"]["location"]),
     output:
-        mzml = "mzml/{datafile}.mzML"
+        mzml = temp("mzml/{datafile}.mzML")
     singularity:
         config['singularity']['default']
     threads:
@@ -11,7 +11,7 @@ rule fix_mzml_files:
     priority:
         1
     params:
-        debug = '-debug %s' % debug,
+        debug = '-debug {0}'.format(config["database"]),
         log = 'mzml/{datafile}.log'
     shell:
         "FileConverter "

@@ -12,7 +12,14 @@ rule xtandem:
     priority:
         10
     params:
-        debug = '-debug %s' % debug,
+        pmt = "-precursor_mass_tolerance {0}".format(config["precursor"]["tolerance"]),
+        pmu = "-precursor_error_units {0}".format(config["precursor"]["units"]),
+        fmt = "-fragment_mass_tolerance {0}".format(config["fragment"]["tolerance"]),
+        fmu = "-fragment_error_units {0}".format(config["fragment"]["units"]),
+        e = "-enzyme {0}".format(config["digestion"]["enzyme"]),
+        mc = "-missed_cleavages {0}".format(config["digestion"]["missed_cleavages"]),
+        fm = "-fixed_modifications {0}".format(config["modifications"]["fixed"]),
+        debug = '-debug {0}'.format(config["database"]),
         log = 'work/%s/{datafile}/dbsearch_{datafile}.log' % search
     shell:
         "XTandemAdapter "
@@ -20,12 +27,13 @@ rule xtandem:
         "-out {output.idxml} "
         "-database {input.fasta} "
         "-xtandem_executable tandem.exe "
-        "-precursor_mass_tolerance {precursor_mass_tolerance} "
-        "-precursor_error_units {precursor_error_units} "
-        "-fragment_mass_tolerance {config[fragment][mass_tolerance]} "
-        "-fragment_error_units {fragment_error_units} "
-        "-enzyme {enzyme} -missed_cleavages {missed_cleavages} "
-        "-fixed_modifications {fixed_modifications} "
+        "{params.pmt} "
+        "{params.pmu} "
+        "{params.fmt} "
+        "{params.fmu} "
+        "{params.e} "
+        "{params.mc} "
+        "{params.fm} "
         "-threads {threads} "
         "{params.debug} "
         "2>&1 | tee {params.log} "

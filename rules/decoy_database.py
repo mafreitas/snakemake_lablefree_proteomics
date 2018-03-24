@@ -1,9 +1,7 @@
 #DecoyDatabase
 rule make_database:
-    input:
-        expand('fasta/{database}.fasta', database=DATABASES)
-    output:
-        'work/database/target_decoy_database.fasta'
+    input: expand('{location}/{database}.fasta', location=config["fasta"]["location"],database=DATABASES)
+    output: 'work/database/target_decoy_database.fasta'
     singularity:
         config['singularity']['default']
     threads:
@@ -11,7 +9,7 @@ rule make_database:
     params:
         decoy_string = "-decoy_string {0}".format(config["database"]["decoy_string"]),
         decoy_string_position = "-decoy_string_position {0}".format(config["database"]["decoy_string_position"]),
-        debug = '-debug %s' % debug,
+        debug = '-debug {0}'.format(config["database"]),
         log = "work/database/target_decoy_database.log",
     shell:
         "DecoyDatabase "
