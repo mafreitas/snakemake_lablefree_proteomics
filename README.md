@@ -7,6 +7,9 @@ https://bitbucket.org/snakemake/snakemake
 
 * Michael Freitas
 
+## Requirements
+The workflow requires preinstallation of snakemake and singularity.  The workflow uses a prebuild singularity container with that has OpenMS 2.3.0 and thirdparty applicaitons.  Consult the documentation for these tools on their installation.
+
 ## Usage
 
 ### Step 1: Install workflow
