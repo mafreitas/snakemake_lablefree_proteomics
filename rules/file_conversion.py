@@ -6,12 +6,10 @@ rule fix_mzml_files:
         mzml = temp("mzml/{datafile}.mzML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
-    priority:
-        1
+    threads: 1
+    priority: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'mzml/{datafile}.log'
     shell:
         "FileConverter "

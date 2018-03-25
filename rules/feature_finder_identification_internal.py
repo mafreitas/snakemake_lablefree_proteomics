@@ -7,11 +7,10 @@ rule filter_peptides_ffi:
         idxml = temp("work/{dbsearchdir}/{datafile}/ffidi_fdr_filt_{datafile}.idXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         pepfdr = '-score:pep {0}'.format(config["peptide"]["fdr"]),
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/%s/{datafile}/pi_filt_ur_{datafile}.log' % search
     shell:
         "IDFilter "
@@ -31,14 +30,12 @@ rule feature_finder_indentification:
         idxml = "work/{dbsearchdir}/{datafile}/ffidi_fdr_filt_{datafile}.idXML",
     output:
         featurexml = "work/{dbsearchdir}/{datafile}/ffidi_filt_{datafile}.featureXML"
-    threads:
-        4
+    threads: 2
     singularity:
         "shub://mafreitas/singularity-openms:latest"
     params:
         lc_peak_width = "-detect:peak_width {0}".format(config["lc"]["peak_width"]),
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/{datafile}/ffidi_filt_{datafile}.log'
     shell:
         "FeatureFinderIdentification "
@@ -58,12 +55,11 @@ rule align_ffi_maps:
         temp(expand("work/{{dbsearchdir}}/{sample}/ffidi_filt_align_{sample}.featureXML",sample=SAMPLES))
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         mz_max_difference = "-algorithm:pairfinder:distance_MZ:max_difference 20",
         mz_unit = "-algorithm:pairfinder:distance_MZ:unit ppm",
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
 
         log = 'work/{dbsearchdir}/ffidi_filt_align_.log'
     shell:
@@ -85,12 +81,11 @@ rule link_ffi_maps:
         temp("work/{dbsearchdir}/ffidi_flq.consensusXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         mz_max_difference = "-algorithm:distance_MZ:max_difference 20",
         mz_unit = "-algorithm:distance_MZ:unit ppm",
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
 
         log = 'work/{dbsearchdir}/ffidi_flq.log'
     shell:
@@ -111,10 +106,9 @@ rule resolve_ffi_map_conflicts:
         featurexml = temp("work/{dbsearchdir}/ffidi_flq_idcr.consensusXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
 
         log = 'work/{dbsearchdir}/ffidi_flq_idcr.log'
     shell:
@@ -132,10 +126,9 @@ rule normalize_ffi_maps:
         featurexml = temp("work/{dbsearchdir}/ffidi_flq_idcr_cmn.consensusXML")
     singularity:
         config['singularity']['default']
-    threads:
-        14
+    threads: 4
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
 
         log = 'work/{dbsearchdir}/ffidi_flq_idcr_cmn.log'
     shell:
@@ -154,10 +147,9 @@ rule quantify_proteins_ffi_maps:
         csv = "csv/ffidi_{dbsearchdir}_proteinIntensities.csv"
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
 
         log = "csv/ffidi_{dbsearchdir}_proteinIntensities.log"
     shell:

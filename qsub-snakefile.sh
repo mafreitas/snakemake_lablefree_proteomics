@@ -25,9 +25,9 @@ echo ------------------------------------------------------
 
 module load python
 module load singularity
-source activate snakemake 
+source activate snakemake
 
 cd $PBS_O_WORKDIR
 
-snakemake --unlock
+snakemake --snakefile Snakefile.py --unlock
 snakemake --snakefile Snakefile.py --cores 28 -p --use-singularity

@@ -1,3 +1,9 @@
 ._Snakefile.py
 ftp.peptideatlas.org/
 .snakemake/
+work/
+mzml/
+fasta/
+raw/
+logs/
+csv/

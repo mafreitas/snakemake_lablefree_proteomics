@@ -6,11 +6,9 @@ rule msgfplus_db_index:
         index = 'work/database/target_decoy_database.canno'
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/database/MSGFPlusIndexDB.log'
     shell:
         "java -Xmx3500M -cp /usr/local/openms_thirdparty/All/MSGFPlus/MSGFPlus.jar "
@@ -31,16 +29,13 @@ rule msgfplus:
         idxml = "work/%s/{datafile}/dbsearch_{datafile}.idXML" % search
     singularity:
         config['singularity']['default']
-    threads:
-        4
-    priority:
-        10
+    threads: 4
     params:
         pmt = "-precursor_mass_tolerance {0}".format(config["precursor"]["tolerance"]),
         pmu = "-precursor_error_units {0}".format(config["precursor"]["units"]),
         e = "-enzyme {0}".format(config["digestion"]["enzyme"]),
         fm = "-fixed_modifications {0}".format(config["modifications"]["fixed"]),
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/%s/{datafile}/dbsearch_{datafile}.log' % search
     shell:
         "MSGFPlusAdapter "

@@ -5,10 +5,9 @@ rule find_features_multiplex:
     output:
         featurexml = "work/featurefindermultiplex/{datafile}/multiplex_{datafile}.featureXML",
         consensusxml = "work/featurefindermultiplex/{datafile}/multiplex_{datafile}.consensusxml"
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/featurefindermultiplex/{datafile}/multiplex_{datafile}.log'
     singularity:
         config['singularity']['default']
@@ -28,11 +27,10 @@ rule filter_peptides_ffm:
         idxml = temp("work/{dbsearchdir}/{datafile}/ffm_filt_{datafile}.idXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         pepfdr = '-score:pep {0}'.format(config["peptide"]["fdr"]),
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/%s/{datafile}/pi_filt_ur_{datafile}.log' % search
     shell:
         "IDFilter "
@@ -54,13 +52,11 @@ rule map_ffm_features:
         featurexml = temp("work/{dbsearchdir}/{datafile}/ffm_filt_idmap_{datafile}.featureXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         centroid_rt = "-feature:use_centroid_rt ",
         centroid_mz = "-feature:use_centroid_mz ",
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/{datafile}/ffm_filt_idmap_{datafile}.log'
     shell:
         "IDMapper "
@@ -82,13 +78,11 @@ rule align_ffm_maps:
         temp(expand("work/{{dbsearchdir}}/{sample}/ffm_filt_idmap_align_{sample}.featureXML",sample=SAMPLES))
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         mz_max_difference = "-algorithm:pairfinder:distance_MZ:max_difference 20",
         mz_unit = "-algorithm:pairfinder:distance_MZ:unit ppm",
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffm_filt_idmap_align.log'
     shell:
         "MapAlignerPoseClustering "
@@ -108,13 +102,11 @@ rule link_ffm_maps:
         featurexml = temp("work/{dbsearchdir}/ffm_flq.consensusXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         mz_max_difference = "-algorithm:distance_MZ:max_difference 20",
         mz_unit = "-algorithm:distance_MZ:unit ppm",
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffm_flq.log'
     shell:
         "FeatureLinkerUnlabeledQT "
@@ -134,11 +126,9 @@ rule resolve_ffm_map_conflicts:
         featurexml = temp("work/{dbsearchdir}/ffm_flq_idcr.consensusXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffm_flq_idcr.log'
     shell:
         "IDConflictResolver "
@@ -155,11 +145,9 @@ rule normalize_ffm_maps:
         featurexml = temp("work/{dbsearchdir}/ffm_flq_idcr_cmn.consensusXML")
     singularity:
         config['singularity']['default']
-    threads:
-        14
+    threads: 4
     params:
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffm_flq_idcr_cmn.log'
     shell:
         "ConsensusMapNormalizer "
@@ -177,11 +165,9 @@ rule quantify_proteins_ffm_maps:
         csv = "csv/ffm_{dbsearchdir}_proteinIntensities.csv"
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = "csv/ffm_{dbsearchdir}_proteinIntensities.log"
     shell:
         "ProteinQuantifier "

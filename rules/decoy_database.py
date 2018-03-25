@@ -4,12 +4,11 @@ rule make_database:
     output: 'work/database/target_decoy_database.fasta'
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         decoy_string = "-decoy_string {0}".format(config["database"]["decoy_string"]),
         decoy_string_position = "-decoy_string_position {0}".format(config["database"]["decoy_string_position"]),
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = "work/database/target_decoy_database.log",
     shell:
         "DecoyDatabase "

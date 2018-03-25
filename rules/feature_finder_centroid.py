@@ -4,10 +4,9 @@ rule find_features_centroid:
         mzml = "mzml/{datafile}.mzML"
     output:
         featurexml = "work/featurefindercentroided/{datafile}/ffc_{datafile}.featureXML"
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/featurefindercentroided/{datafile}/ffc_{datafile}.log'
     singularity:
         config['singularity']['default']
@@ -27,11 +26,10 @@ rule filter_peptides_ffc:
         idxml = temp("work/{dbsearchdir}/{datafile}/ffc_filt_{datafile}.idXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         pepfdr = '-score:pep {0}'.format(config["peptide"]["fdr"]),
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/%s/{datafile}/pi_filt_ur_{datafile}.log' % search
     shell:
         "IDFilter "
@@ -53,12 +51,11 @@ rule map_ffc_features:
         featurexml = temp("work/{dbsearchdir}/{datafile}/ffc_filt_idmap_{datafile}.featureXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         centroid_rt = "-feature:use_centroid_rt ",
         centroid_mz = "-feature:use_centroid_mz ",
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/{datafile}/ffc_filt_idmap_{datafile}.log'
     shell:
         "IDMapper "
@@ -80,12 +77,11 @@ rule align_ffc_maps:
         temp(expand("work/{{dbsearchdir}}/{sample}/ffc_filt_idmap_align_{sample}.featureXML",sample=SAMPLES))
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         mz_max_difference = "-algorithm:pairfinder:distance_MZ:max_difference {0}".format(config["precursor"]["tolerance"]),
         mz_unit = "-algorithm:pairfinder:distance_MZ:unit {0}".format(config["precursor"]["units"]),
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffc_filt_idmap_align.log'
     shell:
         "MapAlignerPoseClustering "
@@ -105,12 +101,11 @@ rule link_ffc_maps:
         featurexml = temp("work/{dbsearchdir}/ffc_flq.consensusXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         mz_max_difference = "-algorithm:distance_MZ:max_difference 20",
         mz_unit = "-algorithm:distance_MZ:unit ppm",
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffc_flq.log'
     shell:
         "FeatureLinkerUnlabeledQT "
@@ -130,10 +125,9 @@ rule resolve_ffc_map_conflicts:
         featurexml = temp("work/{dbsearchdir}/ffc_flq_idcr.consensusXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffc_flq_idcr.log'
     shell:
         "IDConflictResolver "
@@ -153,7 +147,7 @@ rule normalize_ffc_maps:
     threads:
         14
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffc_flq_idcr_cmn.log'
     shell:
         "ConsensusMapNormalizer "
@@ -171,10 +165,9 @@ rule quantify_proteins_ffc_maps:
         csv = "csv/ffc_{dbsearchdir}_proteinIntensities.csv"
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = "csv/ffc_{dbsearchdir}_proteinIntensities.log"
     shell:
         "ProteinQuantifier "

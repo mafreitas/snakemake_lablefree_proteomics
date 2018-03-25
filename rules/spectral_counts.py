@@ -6,11 +6,10 @@ rule filter_peptides_sc:
         idxml = temp("work/{dbsearchdir}/{datafile}/sc_filt_{datafile}.idXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         pepfdr = '-score:pep {0}'.format(config["peptide"]["fdr"]),
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = 'work/%s/{datafile}/pi_filt_ur_{datafile}.log' % search
     shell:
         "IDFilter "
@@ -33,10 +32,9 @@ rule count_spectra_perfile:
         csv = temp("csv/{datafile}_{dbsearchdir}_proteinCounts.csv")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = "csv/{datafile}_{dbsearchdir}_proteinCounts.log"
     singularity:
         config['singularity']['default']
@@ -62,8 +60,7 @@ rule combine_spectral_counts:
     params:
         names = expand("{sample}", sample=SAMPLES),
         log = 'false'
-    threads:
-        1
+    threads: 1
     run:
         import pandas as pd
         import numpy as np

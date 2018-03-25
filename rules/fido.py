@@ -7,11 +7,9 @@ rule merge_peptides_fido:
         idxml = temp("work/{dbsearch}/proteinid/idmerge.idXML"),
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = "work/{dbsearch}/proteinid/idmerge.log"
     shell:
         "IDMerger "
@@ -30,11 +28,9 @@ rule filter_peptides_fido:
         idxml = temp("work/{dbsearch}/proteinid/idfilter.idXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = "work/{dbsearch}/proteinid/idfilter.log"
     shell:
         "IDFilter "
@@ -54,11 +50,9 @@ rule fido:
         idxml = temp("work/{dbsearch}/proteinid/fido.idXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = "work/{dbsearch}/proteinid/fido.log"
     shell:
         "FidoAdapter "
@@ -78,11 +72,9 @@ rule fido_fdr:
         idxml = temp("work/{dbsearch}/proteinid/fido_fdr.idXML")
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
-        debug = '-debug {0}'.format(config["database"]),
-
+        debug = '-debug {0}'.format(config["debug"]),
         log = "work/{dbsearch}/proteinid/fido_fdr.log"
     shell:
         "FalseDiscoveryRate "
@@ -102,11 +94,10 @@ rule fido_fdr_filter:
         idxml = "work/{dbsearch}/proteinid/fido_fdr_filt.idXML"
     singularity:
         config['singularity']['default']
-    threads:
-        1
+    threads: 1
     params:
         profdr = '-score:pep {0}'.format(config["protein"]["fdr"]),
-        debug = '-debug {0}'.format(config["database"]),
+        debug = '-debug {0}'.format(config["debug"]),
         log = "work/{dbsearch}/proteinid/fido_fdr_filt.log"
     shell:
         "IDFilter "
