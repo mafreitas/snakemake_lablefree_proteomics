@@ -8,6 +8,10 @@ rule merge_peptides_fido:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearch}/proteinid/idmerge.benchmark.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = "work/{dbsearch}/proteinid/idmerge.log"
@@ -29,6 +33,10 @@ rule filter_peptides_fido:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearch}/proteinid/idfilter.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = "work/{dbsearch}/proteinid/idfilter.log"
@@ -51,6 +59,10 @@ rule fido:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearch}/proteinid/fido.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = "work/{dbsearch}/proteinid/fido.log"
@@ -73,6 +85,10 @@ rule fido_fdr:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearch}/proteinid/fido_fdr.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = "work/{dbsearch}/proteinid/fido_fdr.log"
@@ -95,6 +111,10 @@ rule fido_fdr_filter:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearch}/proteinid/fido_fdr_filt.benchmark.txt"
     params:
         profdr = '-score:pep {0}'.format(config["protein"]["fdr"]),
         debug = '-debug {0}'.format(config["debug"]),

@@ -7,6 +7,10 @@ rule fix_mzml_files:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "mzml/{datafile}.benchmark.txt"
     priority: 1
     params:
         debug = '-debug {0}'.format(config["debug"]),

@@ -7,6 +7,10 @@ rule msgfplus_db_index:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/database/MSGFPlusIndexDB.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = 'work/database/MSGFPlusIndexDB.log'
@@ -26,17 +30,21 @@ rule msgfplus:
         fasta = 'work/database/target_decoy_database.fasta',
         index = 'work/database/target_decoy_database.canno'
     output:
-        idxml = "work/%s/{datafile}/dbsearch_{datafile}.idXML" % search
+        idxml = "work/msgfplus/{datafile}/dbsearch_{datafile}.idXML"
     singularity:
         config['singularity']['default']
     threads: 4
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/msgfplus/{datafile}/dbsearch_{datafile}.benchmark.txt"
     params:
         pmt = "-precursor_mass_tolerance {0}".format(config["precursor"]["tolerance"]),
         pmu = "-precursor_error_units {0}".format(config["precursor"]["units"]),
         e = "-enzyme {0}".format(config["digestion"]["enzyme"]),
         fm = "-fixed_modifications {0}".format(config["modifications"]["fixed"]),
         debug = '-debug {0}'.format(config["debug"]),
-        log = 'work/%s/{datafile}/dbsearch_{datafile}.log' % search
+        log = 'work/msgfplus/{datafile}/dbsearch_{datafile}.log'
     shell:
         "MSGFPlusAdapter "
         "-in {input.mzml} -out {output.idxml} -database {input.fasta} "

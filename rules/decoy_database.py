@@ -5,6 +5,10 @@ rule make_database:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/database/target_decoy_database.benchmark.txt"
     params:
         decoy_string = "-decoy_string {0}".format(config["database"]["decoy_string"]),
         decoy_string_position = "-decoy_string_position {0}".format(config["database"]["decoy_string_position"]),

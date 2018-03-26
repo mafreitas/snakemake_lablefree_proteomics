@@ -7,3 +7,6 @@ fasta/
 raw/
 logs/
 csv/
+*.out
+benchmarks.txt
+

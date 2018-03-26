@@ -7,9 +7,13 @@ rule calc_peptide_posterior_error:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearchdir}/{datafile}/idpep_{datafile}.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
-        log = 'work/%s/{datafile}/idpep_{datafile}.log' % search
+        log = 'work/{dbsearchdir}/{datafile}/idpep_{datafile}.log'
     shell:
         "IDPosteriorErrorProbability "
         "-in {input.idxml} "
@@ -29,13 +33,17 @@ rule index_peptides:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearchdir}/{datafile}/pi_{datafile}.benchmark.txt"
     params:
         decoy_string = "-decoy_string {0}".format(config["database"]["decoy_string"]),
         decoy_string_position = "-decoy_string_position {0}".format(config["database"]["decoy_string_position"]),
         missing_decoy_action = "-missing_decoy_action {0}".format(config["database"]["missing_decoy_action"]),
-        enzyme = "-enzyme {0}".format(config["digestion"]["enzyme"]),
+        enzyme = "-enzyme:name {0}".format(config["digestion"]["enzyme"]),
         debug = '-debug {0}'.format(config["debug"]),
-        log = 'work/%s/{datafile}/pi_{datafile}.log' % search
+        log = 'work/{dbsearchdir}/{datafile}/pi_{datafile}.log'
     shell:
         "PeptideIndexer "
         "-in {input.idxml} "
@@ -62,9 +70,13 @@ rule peptide_fdr:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearchdir}/{datafile}/fdr_{datafile}.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
-        log = 'work/%s/{datafile}/fdr_{datafile}.log' % search
+        log = 'work/{dbsearchdir}/{datafile}/fdr_{datafile}.log'
     shell:
         "FalseDiscoveryRate "
         "-in {input.idxml} "

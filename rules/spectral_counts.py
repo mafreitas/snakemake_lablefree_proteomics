@@ -6,11 +6,15 @@ rule filter_peptides_sc:
         idxml = temp("work/{dbsearchdir}/{datafile}/sc_filt_{datafile}.idXML")
     singularity:
         config['singularity']['default']
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
     threads: 1
+    benchmark:
+        "work/{dbsearchdir}/{datafile}/pi_filt_ur_{datafile}.benchmark.txt"
     params:
         pepfdr = '-score:pep {0}'.format(config["peptide"]["fdr"]),
         debug = '-debug {0}'.format(config["debug"]),
-        log = 'work/%s/{datafile}/pi_filt_ur_{datafile}.log' % search
+        log = 'work/{dbsearchdir}/{datafile}/pi_filt_ur_{datafile}.log'
     shell:
         "IDFilter "
         "-in {input.idxml} "
@@ -33,6 +37,10 @@ rule count_spectra_perfile:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "csv/{datafile}_{dbsearchdir}_proteinCounts.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = "csv/{datafile}_{dbsearchdir}_proteinCounts.log"
@@ -61,6 +69,10 @@ rule combine_spectral_counts:
         names = expand("{sample}", sample=SAMPLES),
         log = 'false'
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "csv/sc_{dbsearchdir}_proteinCounts.benchmark.txt"
     run:
         import pandas as pd
         import numpy as np

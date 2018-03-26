@@ -30,4 +30,4 @@ source activate snakemake
 cd $PBS_O_WORKDIR
 
 snakemake --snakefile Snakefile.py --unlock
-snakemake --snakefile Snakefile.py --cores 28 -p --use-singularity
+snakemake --snakefile Snakefile.py --cores 28 --resources mem_mb=128000 -p --use-singularity 

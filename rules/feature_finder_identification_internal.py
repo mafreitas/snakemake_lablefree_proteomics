@@ -8,10 +8,14 @@ rule filter_peptides_ffi:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearchdir}/{datafile}/pi_filt_ur_{datafile}.benchmark.txt"
     params:
         pepfdr = '-score:pep {0}'.format(config["peptide"]["fdr"]),
         debug = '-debug {0}'.format(config["debug"]),
-        log = 'work/%s/{datafile}/pi_filt_ur_{datafile}.log' % search
+        log = 'work/{dbsearchdir}/{datafile}/pi_filt_ur_{datafile}.log'
     shell:
         "IDFilter "
         "-in {input.idxml} "
@@ -30,9 +34,13 @@ rule feature_finder_indentification:
         idxml = "work/{dbsearchdir}/{datafile}/ffidi_fdr_filt_{datafile}.idXML",
     output:
         featurexml = "work/{dbsearchdir}/{datafile}/ffidi_filt_{datafile}.featureXML"
-    threads: 2
     singularity:
         "shub://mafreitas/singularity-openms:latest"
+    threads: 2
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearchdir}/{datafile}/ffidi_filt_{datafile}.benchmark.txt"
     params:
         lc_peak_width = "-detect:peak_width {0}".format(config["lc"]["peak_width"]),
         debug = '-debug {0}'.format(config["debug"]),
@@ -56,12 +64,15 @@ rule align_ffi_maps:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearchdir}/ffidi_filt_align.benchmark.txt"
     params:
         mz_max_difference = "-algorithm:pairfinder:distance_MZ:max_difference 20",
         mz_unit = "-algorithm:pairfinder:distance_MZ:unit ppm",
         debug = '-debug {0}'.format(config["debug"]),
-
-        log = 'work/{dbsearchdir}/ffidi_filt_align_.log'
+        log = 'work/{dbsearchdir}/ffidi_filt_align.log'
     shell:
         "MapAlignerPoseClustering "
         "-in {input.featurexmls} "
@@ -82,11 +93,14 @@ rule link_ffi_maps:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearchdir}/ffidi_flq.benchmark.txt"
     params:
         mz_max_difference = "-algorithm:distance_MZ:max_difference 20",
         mz_unit = "-algorithm:distance_MZ:unit ppm",
         debug = '-debug {0}'.format(config["debug"]),
-
         log = 'work/{dbsearchdir}/ffidi_flq.log'
     shell:
         "FeatureLinkerUnlabeledQT "
@@ -107,9 +121,12 @@ rule resolve_ffi_map_conflicts:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearchdir}/ffidi_flq_idcr.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
-
         log = 'work/{dbsearchdir}/ffidi_flq_idcr.log'
     shell:
         "IDConflictResolver "
@@ -127,9 +144,12 @@ rule normalize_ffi_maps:
     singularity:
         config['singularity']['default']
     threads: 4
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/{dbsearchdir}/ffidi_flq_idcr_cmn.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
-
         log = 'work/{dbsearchdir}/ffidi_flq_idcr_cmn.log'
     shell:
         "ConsensusMapNormalizer "
@@ -148,9 +168,12 @@ rule quantify_proteins_ffi_maps:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "csv/ffidi_{dbsearchdir}_proteinIntensities.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
-
         log = "csv/ffidi_{dbsearchdir}_proteinIntensities.log"
     shell:
         "ProteinQuantifier "

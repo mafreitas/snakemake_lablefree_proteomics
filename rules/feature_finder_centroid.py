@@ -5,6 +5,10 @@ rule find_features_centroid:
     output:
         featurexml = "work/featurefindercentroided/{datafile}/ffc_{datafile}.featureXML"
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        "work/featurefindercentroided/{datafile}/ffc_{datafile}.benchmark.txt"
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = 'work/featurefindercentroided/{datafile}/ffc_{datafile}.log'
@@ -27,10 +31,14 @@ rule filter_peptides_ffc:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        'work/{dbsearchdir}/{datafile}/pi_filt_ur_{datafile}.benchmark.txt'
     params:
         pepfdr = '-score:pep {0}'.format(config["peptide"]["fdr"]),
         debug = '-debug {0}'.format(config["debug"]),
-        log = 'work/%s/{datafile}/pi_filt_ur_{datafile}.log' % search
+        log = 'work/{dbsearchdir}/{datafile}/pi_filt_ur_{datafile}.log'
     shell:
         "IDFilter "
         "-in {input.idxml} "
@@ -52,6 +60,10 @@ rule map_ffc_features:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        'work/{dbsearchdir}/{datafile}/ffc_filt_idmap_{datafile}.benchmark.txt'
     params:
         centroid_rt = "-feature:use_centroid_rt ",
         centroid_mz = "-feature:use_centroid_mz ",
@@ -78,6 +90,10 @@ rule align_ffc_maps:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        'work/{dbsearchdir}/ffc_filt_idmap_align.benchmark.txt'
     params:
         mz_max_difference = "-algorithm:pairfinder:distance_MZ:max_difference {0}".format(config["precursor"]["tolerance"]),
         mz_unit = "-algorithm:pairfinder:distance_MZ:unit {0}".format(config["precursor"]["units"]),
@@ -102,6 +118,10 @@ rule link_ffc_maps:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        'work/{dbsearchdir}/ffc_flq.benchmark.txt'
     params:
         mz_max_difference = "-algorithm:distance_MZ:max_difference 20",
         mz_unit = "-algorithm:distance_MZ:unit ppm",
@@ -126,6 +146,10 @@ rule resolve_ffc_map_conflicts:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        'work/{dbsearchdir}/ffc_flq_idcr.benchmark.txt'
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffc_flq_idcr.log'
@@ -144,8 +168,12 @@ rule normalize_ffc_maps:
         featurexml = temp("work/{dbsearchdir}/ffc_flq_idcr_cmn.consensusXML")
     singularity:
         config['singularity']['default']
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
     threads:
-        14
+        2
+    benchmark:
+        'work/{dbsearchdir}/ffc_flq_idcr_cmn.benchmark.txt'
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = 'work/{dbsearchdir}/ffc_flq_idcr_cmn.log'
@@ -166,6 +194,10 @@ rule quantify_proteins_ffc_maps:
     singularity:
         config['singularity']['default']
     threads: 1
+    resources:
+        mem_mb=lambda wildcards, attempt: attempt * 8000
+    benchmark:
+        'csv/ffc_{dbsearchdir}_proteinIntensities.txt'
     params:
         debug = '-debug {0}'.format(config["debug"]),
         log = "csv/ffc_{dbsearchdir}_proteinIntensities.log"
