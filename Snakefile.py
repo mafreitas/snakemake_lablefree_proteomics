@@ -56,3 +56,7 @@ include: "rules/feature_finder_centroid.py"
 
 # Determine Spectral Counts
 include: "rules/spectral_counts.py"
+
+# Finalize script
+include: "rules/onsuccess.py"
+

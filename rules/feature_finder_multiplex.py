@@ -8,20 +8,29 @@ rule find_features_multiplex:
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 8000
-    benchmark:
-        "work/featurefindermultiplex/{datafile}/multiplex_{datafile}.benchmark.txt"
+    benchmark: 
+	    "work/featurefindermultiplex/{datafile}/multiplex_{datafile}.benchmark.txt"
     params:
+        rt_typical = "-algorithm:rt_typical {0}".format(config["lc"]["peak_width"]),
+        mz_tolerance = "-algorithm:mz_tolerance {0}".format(config["precursor"]["tolerance"]),
+        mz_unit = "-algorithm:mz_unit {0}".format(config["precursor"]["units"]),
+        intensity_cutoff = "-algorithm:intensity_cutoff {0}".format(config["precursor"]["threshold"]),
         debug = '-debug {0}'.format(config["debug"]),
         log = 'work/featurefindermultiplex/{datafile}/multiplex_{datafile}.log'
     singularity:
         config['singularity']['default']
     shell:
-         "FeatureFinderMultiplex "
-         "-in {input.mzml} -out {output.consensusxml} "
-         "-out_features {output.featurexml} "
-         "-threads {threads} "
-         "{params.debug} "
-         "2>&1 | tee {params.log} "
+        "FeatureFinderMultiplex "
+        "-in {input.mzml} -out {output.consensusxml} "
+        "-out_features {output.featurexml} "
+	    "{params.rt_typical} "
+	    "{params.mz_tolerance} "
+	    "{params.mz_unit} "
+	    "{params.intensity_cutoff} "
+	    "-threads {threads} "
+        "{params.debug} "
+        "2>&1 | tee {params.log} "
+
 
 # IDFilter
 rule filter_peptides_ffm:
@@ -35,7 +44,7 @@ rule filter_peptides_ffm:
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 8000
     benchmark:
-        "work/{dbsearchdir}/{datafile}/pi_filt_ur_{datafile}.benchmark.txt"
+	    "work/{dbsearchdir}/{datafile}/pi_filt_ur_{datafile}.benchmark.txt"
     params:
         pepfdr = '-score:pep {0}'.format(config["peptide"]["fdr"]),
         debug = '-debug {0}'.format(config["debug"]),
