@@ -22,7 +22,6 @@ rule calc_peptide_posterior_error:
         "{params.debug} "
         "2>&1 | tee {params.log} "
 
-
 # PeptideIndexer
 rule index_peptides:
     input:
@@ -59,7 +58,6 @@ rule index_peptides:
         "{params.enzyme} "
         "{params.debug} "
         "2>&1 | tee {params.log} "
-
 
 # FalseDiscoveryRate:
 rule peptide_fdr:

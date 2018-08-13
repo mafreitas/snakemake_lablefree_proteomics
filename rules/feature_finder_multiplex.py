@@ -8,7 +8,7 @@ rule find_features_multiplex:
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 8000
-    benchmark: 
+    benchmark:
 	    "work/featurefindermultiplex/{datafile}/multiplex_{datafile}.benchmark.txt"
     params:
         rt_typical = "-algorithm:rt_typical {0}".format(config["lc"]["peak_width"]),
@@ -60,7 +60,7 @@ rule filter_peptides_ffm:
         "{params.debug} "
         "2>&1 | tee {params.log} "
 
-#IDMapper
+# IDMapper
 rule map_ffm_features:
     input:
         idxml = "work/{dbsearchdir}/{datafile}/ffm_filt_{datafile}.idXML",
@@ -90,7 +90,7 @@ rule map_ffm_features:
         "{params.debug} "
         "2>&1 | tee {params.log} "
 
-#MapAlignerPoseClustering:
+# MapAlignerPoseClustering:
 rule align_ffm_maps:
     input:
         featurexmls = expand("work/{{dbsearchdir}}/{sample}/ffm_filt_idmap_{sample}.featureXML",sample=SAMPLES)
@@ -119,7 +119,7 @@ rule align_ffm_maps:
         "{params.debug} "
         "2>&1 | tee {params.log} "
 
-#FeatureLinkerUnlabeledQT:
+# FeatureLinkerUnlabeledQT:
 rule link_ffm_maps:
     input:
         featurexmls = expand("work/{{dbsearchdir}}/{sample}/ffm_filt_idmap_align_{sample}.featureXML",sample=SAMPLES)
@@ -147,7 +147,7 @@ rule link_ffm_maps:
         "{params.debug} "
         "2>&1 | tee {params.log} "
 
-#IDConflictResolverRule
+# IDConflictResolverRule
 rule resolve_ffm_map_conflicts:
     input:
         featurexml = "work/{dbsearchdir}/ffm_flq.consensusXML"
@@ -170,7 +170,7 @@ rule resolve_ffm_map_conflicts:
         "{params.debug} "
         "2>&1 | tee {params.log} "
 
-#ConsensusMapNormalizer:
+# ConsensusMapNormalizer:
 rule normalize_ffm_maps:
     input:
         featurexml = "work/{dbsearchdir}/ffm_flq_idcr.consensusXML"
