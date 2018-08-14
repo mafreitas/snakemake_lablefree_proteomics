@@ -24,7 +24,7 @@ rule msgfplus_db_index:
         "2>&1 | tee {params.log} "
 
 # MSGFPlus
-rule msgfplus:
+rule msgfplus_search:
     input:
         mzml = "mzml/{datafile}.mzML",
         fasta = 'work/database/target_decoy_database.fasta',

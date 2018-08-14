@@ -13,8 +13,9 @@ mzml:
 search_engines:
     - "msgfplus"
     - "xtandem"
-#    - "comet"
-#    - "myrimatch"
+    - "msfragger"
+    - "comet"
+    - "myrimatch"
 
 lc:
     peak_width: '120'
@@ -43,6 +44,6 @@ peptide:
     fdr: "0.01"
 
 singularity:
-    default: "shub://mafreitas/singularity-openms:latest"
+    default: "shub://mfreitas/openms_081018:master"
 
 debug: "0"
