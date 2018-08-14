@@ -1,4 +1,4 @@
-# MSGFPlus
+# MSFragger
 rule msfragger_search:
     input:
         mzml = "mzml/{datafile}.mzML",
